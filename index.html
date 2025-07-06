@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHSS NSS Unit 500</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+<nav class="navbar">
+    <div class="logo">
+    <img src="assets/images/nss-logo.png" alt="NSS Logo">
+    <span>NSS Unit 500</span>
+</div>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#eventCards">Events</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="#contact-section">Contact</a></li>
+        <li><a href="https://www.instagram.com/campus.nss" target="_blank">Instagram</a></li>
+        <li><a href="login.html" class="navbar-link">Login</a></li>
+    </ul>
+    <div class="menu-toggle" id="menuToggle">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+</nav>
+
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">National Service Scheme</h1>
+        <p class="hero-subtitle">Unit No. 500 | GHSS Medical College Campus</p>
+        <p class="hero-motto">"Not Me, But You"</p>
+        <div class="hero-buttons">
+            <a href="#gallery-preview" class="btn primary-btn">View the Movements</a>
+            <a href="#eventCards" class="btn secondary-btn">View Activities</a>
+        </div>
+    </div>
+</section>
+
+<!-- About NSS Section -->
+<section class="about" id="about">
+    <div class="about-container">
+        <h2 class="section-title">About NSS</h2>
+        <p class="about-intro">
+            The <strong>National Service Scheme (NSS)</strong> is a voluntary organization under the Ministry of Youth Affairs & Sports, Government of India. It aims to instill the spirit of social responsibility and community service in young minds.
+        </p>
+        <div class="about-details">
+            <div class="about-card">
+                <h3>NSS Motto</h3>
+                <p><em>“Not Me, But You”</em></p>
+            </div>
+            <div class="about-card">
+                <h3>Our Unit</h3>
+                <p>Unit No. 500<br>GHSS Medical College Campus</p>
+            </div>
+            <div class="about-card">
+                <h3>Vision</h3>
+                <p>Empowering youth through community service, leadership, and active participation in nation-building.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dynamic Events Section -->
+<section class="event-cards" id="eventCards">
+    <h2>Our Events</h2>
+    <div>
+        <!-- Dynamic events will load here -->
+    </div>
+</section>
+
+<section class="activities-section">
+  <h2>Our Activities</h2>
+  <div class="activities-grid" id="activitiesGrid"></div>
+  <a href="activities.html" class="view-more-btn">View All Activities</a>
+</section>
+
+<!-- Modal Window -->
+<div id="activityModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h3 id="modalTitle"></h3>
+    <img id="modalImage" src="" alt="">
+    <p id="modalDesc"></p>
+    <ul id="modalMeta"></ul>
+  </div>
+</div>
+
+
+<section class="gallery-preview" id="gallery-preview">
+    <h2>Gallery Highlights</h2>
+    <div class="preview-grid" id="galleryPreview">
+        <!-- 4 dynamic images will load here -->
+    </div>
+    <div class="gallery-button">
+        <a href="gallery.html" class="view-gallery-btn">View Full Gallery →</a>
+    </div>
+</section>
+
+<section class="volunteers-section">
+  <h2>Meet Our Leaders & Program Officers</h2>
+  <div class="volunteers-grid" id="homeVolunteers"></div>
+  <div class="view-all-container">
+        <a href="volunteers.html" class="view-all-btn">View All Volunteers</a>
+    </div>
+</section>
+
+<section class="contact-section" id="contact-section">
+  <h2>Contact & Social Links</h2>
+  <div class="contact-cards">
+    <div class="contact-card">
+      <i class="fa-solid fa-envelope"></i>
+      <h3>Email</h3>
+      <a href="mailto:campus.hss.2k24@gmail.com" class="contact-btn email-btn">
+        <i class="fa-solid fa-envelope"></i> Email Us
+      </a>
+    </div>
+
+    <div class="contact-card">
+      <i class="fa-brands fa-instagram"></i>
+      <h3>Instagram</h3>
+      <a href="https://www.instagram.com/campus.nss" target="_blank" class="contact-btn insta-btn">
+        <i class="fa-brands fa-instagram"></i> campus.nss
+      </a>
+      <a href="https://www.instagram.com/campusile.nss" target="_blank" class="contact-btn insta-btn" style="margin-top:8px;">
+        <i class="fa-brands fa-instagram"></i> campusile.nss
+      </a>
+    </div>
+
+    <div class="contact-card">
+      <i class="fa-solid fa-location-dot"></i>
+      <h3>Location</h3>
+      <p>GHSS Medical College Campus, Chevayur, Kozhikode, Kerala</p>
+    </div>
+  </div>
+</section>
+
+<footer style="background-color: #121212; color: #ccc; padding: 30px 20px; text-align: center; font-family: Arial, sans-serif;">
+    <div style="margin-bottom: 15px;">
+        <a href="https://www.instagram.com/campus.nss" target="_blank" style="color: #ccc; margin: 0 10px; text-decoration: none;">
+            <i class="fa-brands fa-instagram"></i> @campus.nss
+        </a>
+        <a href="mailto:campus.hss.2k24@gmail.com" style="color: #ccc; margin: 0 10px; text-decoration: none;">
+            <i class="fa-solid fa-envelope"></i> Email Us
+        </a>
+    </div>
+    <div style="font-size: 14px;">
+        © 2025 NSS Campus. All rights reserved.
+    </div>
+</footer>
+
+
+
+<script src="assets/js/app.js"></script>
+<script type="module">
+    import { loadGalleryPreview } from './script.js';
+    document.addEventListener("DOMContentLoaded", loadGalleryPreview);
+</script>
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+            authDomain: "nss-campus.firebaseapp.com",
+            projectId: "nss-campus",
+            storageBucket: "nss-campus.appspot.com",
+            messagingSenderId: "314430987107",
+            appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
+            measurementId: "G-2K15NLPK6T"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadEvents() {
+            const eventCardsContainer = document.getElementById('eventCards');
+            eventCardsContainer.innerHTML = '<p>Loading events...</p>';
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "events"));
+                eventCardsContainer.innerHTML = '';
+
+                querySnapshot.forEach((doc) => {
+                    const event = doc.data();
+                    const eventCard = `
+                        <div class="event-card">
+                            <img src="${event.imageUrl}" alt="${event.title}">
+                            <div class="event-card-body">
+                                <h3 class="event-card-title">${event.title}</h3>
+                                <p class="event-card-date">${event.date}</p>
+                                <p class="event-card-description">${event.description}</p>
+                            </div>
+                        </div>
+                    `;
+                    eventCardsContainer.innerHTML += eventCard;
+                });
+
+                if (querySnapshot.empty) {
+                    eventCardsContainer.innerHTML = "<p>No events yet. Check back later!</p>";
+                }
+
+            } catch (error) {
+                console.error("Error loading events:", error);
+                eventCardsContainer.innerHTML = "<p>⚠️ Failed to load events. Please try again later.</p>";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadEvents);
+
+        async function loadGalleryPreview() {
+        const container = document.getElementById('galleryPreview');
+        container.innerHTML = '<p>Loading...</p>';
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "gallery"));
+            container.innerHTML = '';
+
+            let count = 0;
+            querySnapshot.forEach((doc) => {
+                if (count < 4) {
+                    const item = doc.data();
+                    const img = document.createElement('img');
+                    img.src = item.imageUrl;
+                    img.alt = item.title || "Gallery Image";
+                    container.appendChild(img);
+                    count++;
+                }
+            });
+
+            if (count === 0) {
+                container.innerHTML = "<p>No images yet.</p>";
+            }
+
+        } catch (err) {
+            console.error("Error loading gallery preview:", err);
+            container.innerHTML = "<p>⚠️ Failed to load gallery.</p>";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadGalleryPreview);
+
+    
+async function loadHomeVolunteers() {
+    const container = document.getElementById('homeVolunteers');
+    const querySnapshot = await getDocs(collection(db, "volunteers"));
+
+    const leadersAndPO = [];
+    querySnapshot.forEach(doc => {
+        const v = doc.data();
+        if (['leader', 'program officer'].includes(v.role.toLowerCase())) leadersAndPO.push(v);
+    });
+
+    leadersAndPO.slice(0, 6).forEach(v => {
+        const div = document.createElement('div');
+        div.className = 'volunteer-card';
+        div.innerHTML = `
+            <img src="${v.photoUrl}" alt="${v.name}">
+            <div class="name">${v.name}</div>
+            <div class="role">${v.role}</div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+loadHomeVolunteers();
+
+const grid = document.getElementById('activitiesGrid');
+const modal = document.getElementById('activityModal');
+const closeBtn = document.querySelector('.close-btn');
+const modalTitle = document.getElementById('modalTitle');
+const modalImage = document.getElementById('modalImage');
+const modalDesc = document.getElementById('modalDesc');
+const modalMeta = document.getElementById('modalMeta');
+
+async function loadActivities(limit = 2) {
+  grid.innerHTML = 'Loading...';
+  const snapshot = await getDocs(collection(db, 'activities'));
+  const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  docs.sort((a, b) => b.date - a.date);
+
+  grid.innerHTML = '';
+  docs.slice(0, limit).forEach(act => {
+    const card = document.createElement('div');
+    card.className = 'activity-card';
+    card.onclick = () => showModal(act);
+    card.innerHTML = `
+      <img src="${act.imgUrl}" alt="${act.title}">
+      <div class="activity-card-content">
+        <div class="activity-title">${act.title}</div>
+        <div class="activity-short">${act.shortDesc}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function showModal(act) {
+  modalTitle.textContent = act.title;
+  modalImage.src = act.imgUrl;
+  modalDesc.textContent = act.shortDesc;
+  modalMeta.innerHTML = `
+    <li><strong>Chief Guest:</strong> ${act.chiefGuest}</li>
+    <li><strong>Time:</strong> ${new Date(act.date).toLocaleString()}</li>
+    <li><strong>Location:</strong> ${act.location}</li>
+    <li><strong>Volunteers:</strong> ${act.volunteers}</li>`;
+  modal.style.display = 'block';
+}
+
+closeBtn.onclick = () => modal.style.display = 'none';
+window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; }
+
+document.addEventListener('DOMContentLoaded', () => loadActivities());
+    </script>
+</body>
+</html>
