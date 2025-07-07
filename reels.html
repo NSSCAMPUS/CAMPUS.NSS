@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reels | NSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+
+        .masonry {
+            column-count: 2;
+            column-gap: 20px;
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .masonry-item iframe {
+            width: 100%;
+            height: 315px;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .masonry {
+                column-count: 1;
+            }
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            margin-left: -25px;
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .navbar-logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            background: #f0f4ff;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-weight: 500;
+            color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+            border: 1px solid #e0eaff;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #007bff;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0,123,255,0.13);
+            transform: translateY(-2px) scale(1.03);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="index.html" class="navbar-logo">NSS Campus</a>
+        <div class="navbar-links">
+            <a href="index.html" class="back-btn">&#8592; Back to Home</a>
+        </div>
+    </div>
+</nav>
+
+<h2>Reels & Shorts</h2>
+
+<div class="masonry-item">
+    <iframe src="https://www.youtube.com/embed/EH5jx5qPabU?si=0bSA0syCXjsZ4gmI" allowfullscreen></iframe>
+</div>
+
+
+<div class="masonry" id="reels"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSy AiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+        authDomain: "nss-campus.firebaseapp.com",
+        projectId: "nss-campus",
+        storageBucket: "nss-campus.appspot.com",
+        messagingSenderId: "314430987107",
+        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
+        measurementId: "G-2K15NLPK6T"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadReels() {
+        const reelsContainer = document.getElementById("reels");
+        reelsContainer.innerHTML = "<p>Loading...</p>";
+
+        try {
+            const snapshot = await getDocs(collection(db, "reels"));
+            reelsContainer.innerHTML = "";
+
+            snapshot.forEach(doc => {
+                const { youtubeUrl } = doc.data();
+                const embedUrl = convertToEmbed(youtubeUrl);
+
+                const html = `
+                    <div class="masonry-item">
+                        <iframe src="${embedUrl}" allowfullscreen></iframe>
+                    </div>
+                `;
+                reelsContainer.innerHTML += html;
+            });
+
+            if (snapshot.empty) {
+                reelsContainer.innerHTML = "<p>No reels uploaded yet.</p>";
+            }
+        } catch (error) {
+            console.error(error);
+            reelsContainer.innerHTML = "<p>⚠️ Failed to load reels.</p>";
+        }
+    }
+
+    function convertToEmbed(url) {
+        const videoId = url.split("/").pop().split("?")[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", loadReels);
+
+    function convertToEmbed(url) {
+    if (url.includes("embed")) {
+        return url;  // Already an embed link, return as is
+    }
+
+    let videoId = "";
+
+    if (url.includes("shorts/")) {
+        videoId = url.split("shorts/")[1].split("?")[0];
+    } else if (url.includes("watch?v=")) {
+        videoId = url.split("watch?v=")[1].split("&")[0];
+    } else {
+        videoId = url.split("/").pop().split("?")[0];
+    }
+
+    return `https://www.youtube.com/embed/${videoId}`;
+}
+</script>
+
+</body>
+</html>
