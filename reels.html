@@ -39,6 +39,17 @@
             border: none;
         }
 
+        .masonry-item p {
+            padding: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            margin: 0;
+            color: #222;
+            text-align: center;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+        }
+
         @media (max-width: 768px) {
             .masonry {
                 column-count: 1;
@@ -112,11 +123,6 @@
 
 <h2>Reels & Shorts</h2>
 
-<div class="masonry-item">
-    <iframe src="https://www.youtube.com/embed/EH5jx5qPabU?si=0bSA0syCXjsZ4gmI" allowfullscreen></iframe>
-</div>
-
-
 <div class="masonry" id="reels"></div>
 
 <script type="module">
@@ -124,13 +130,12 @@
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSy AiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+        apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
         authDomain: "nss-campus.firebaseapp.com",
         projectId: "nss-campus",
         storageBucket: "nss-campus.appspot.com",
         messagingSenderId: "314430987107",
-        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
-        measurementId: "G-2K15NLPK6T"
+        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -144,21 +149,23 @@
             const snapshot = await getDocs(collection(db, "reels"));
             reelsContainer.innerHTML = "";
 
+            if (snapshot.empty) {
+                reelsContainer.innerHTML = "<p>No reels uploaded yet.</p>";
+                return;
+            }
+
             snapshot.forEach(doc => {
-                const { youtubeUrl } = doc.data();
-                const embedUrl = convertToEmbed(youtubeUrl);
+                const { title, url } = doc.data();
+                const embedUrl = convertToEmbed(url);
 
                 const html = `
                     <div class="masonry-item">
                         <iframe src="${embedUrl}" allowfullscreen></iframe>
+                        <p>${title}</p>
                     </div>
                 `;
                 reelsContainer.innerHTML += html;
             });
-
-            if (snapshot.empty) {
-                reelsContainer.innerHTML = "<p>No reels uploaded yet.</p>";
-            }
         } catch (error) {
             console.error(error);
             reelsContainer.innerHTML = "<p>⚠️ Failed to load reels.</p>";
@@ -166,29 +173,22 @@
     }
 
     function convertToEmbed(url) {
-        const videoId = url.split("/").pop().split("?")[0];
+        if (url.includes("embed")) return url;
+
+        let videoId = "";
+
+        if (url.includes("shorts/")) {
+            videoId = url.split("shorts/")[1].split("?")[0];
+        } else if (url.includes("watch?v=")) {
+            videoId = url.split("watch?v=")[1].split("&")[0];
+        } else {
+            videoId = url.split("/").pop().split("?")[0];
+        }
+
         return `https://www.youtube.com/embed/${videoId}`;
     }
 
-    document.addEventListener("DOMContentLoaded", loadReels);
-
-    function convertToEmbed(url) {
-    if (url.includes("embed")) {
-        return url;  // Already an embed link, return as is
-    }
-
-    let videoId = "";
-
-    if (url.includes("shorts/")) {
-        videoId = url.split("shorts/")[1].split("?")[0];
-    } else if (url.includes("watch?v=")) {
-        videoId = url.split("watch?v=")[1].split("&")[0];
-    } else {
-        videoId = url.split("/").pop().split("?")[0];
-    }
-
-    return `https://www.youtube.com/embed/${videoId}`;
-}
+    loadReels();
 </script>
 
 </body>
