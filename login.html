@@ -61,9 +61,34 @@
             margin-top: 10px;
             text-align: center;
         }
+
+        .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: #333;
+    text-decoration: none;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.close-btn:hover {
+    background-color: #ff4d4d;
+    color: #fff;
+}
     </style>
 </head>
 <body>
+
+    <!-- Close Button -->
+<a href="index.html" class="close-btn" title="Close">&times;</a>
 
 <div class="login-container">
     <h2>Admin Login</h2>
