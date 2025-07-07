@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Volunteers | NSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        .volunteers-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .volunteer-card {
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            width: 140px;
+            padding: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .volunteer-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .volunteer-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+        .volunteer-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #333;
+        }
+
+        .volunteer-role {
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #007bff;
+            padding: 8px 14px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .volunteer-card {
+                width: 100px;
+                padding: 8px;
+            }
+            .volunteer-card img {
+                width: 50px;
+                height: 50px;
+            }
+            .volunteer-name {
+                font-size: 0.75rem;
+            }
+            .volunteer-role {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>All Volunteers</h2>
+
+<div class="volunteers-grid" id="volunteersGrid">
+    <!-- Volunteer cards load here -->
+</div>
+
+<div style="text-align:center;">
+    <a href="index.html" class="back-btn">← Back to Home</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+    authDomain: "nss-campus.firebaseapp.com",
+    projectId: "nss-campus",
+    storageBucket: "nss-campus.appspot.com",
+    messagingSenderId: "314430987107",
+    appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
+    measurementId: "G-2K15NLPK6T"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadVolunteers() {
+    const grid = document.getElementById('volunteersGrid');
+    grid.innerHTML = "<p>Loading volunteers...</p>";
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "volunteers"));
+
+        // Separate by role
+        const officers = [];
+        const leaders = [];
+        const others = [];
+
+        querySnapshot.forEach(doc => {
+            const v = doc.data();
+            if (!v.role) {
+                others.push(v);
+                return;
+            }
+            const roleLower = v.role.toLowerCase();
+            if (roleLower === 'program officer') officers.push(v);
+            else if (roleLower === 'leader') leaders.push(v);
+            else others.push(v);
+        });
+
+        // Clear grid
+        grid.innerHTML = "";
+
+        // Responsive: Layered for desktop, stacked for mobile
+        const isMobile = window.innerWidth <= 600;
+
+        function createSection(title, arr) {
+            if (!arr.length) return null;
+            const section = document.createElement('section');
+            section.innerHTML = `<h2>${title}</h2>`;
+            const row = document.createElement('div');
+            row.className = "volunteers-grid";
+            arr.forEach(v => {
+                const card = document.createElement('div');
+                card.className = 'volunteer-card';
+                card.innerHTML = `
+                    <img src="${v.photoUrl || 'https://via.placeholder.com/60?text=No+Photo'}" alt="${v.name || ''}">
+                    <div class="volunteer-name">${v.name || ''}</div>
+                    <div class="volunteer-role">${v.role || ''}</div>
+                `;
+                row.appendChild(card);
+            });
+            section.appendChild(row);
+            return section;
+        }
+
+        if (isMobile) {
+            // Stacked sections for mobile
+            if (officers.length) grid.appendChild(createSection("Program Officer", officers));
+            if (leaders.length) grid.appendChild(createSection("Leaders", leaders));
+            if (others.length) grid.appendChild(createSection("Volunteers", others));
+        } else {
+            // Layered for desktop: officers on top, then leaders, then volunteers
+            const layerWrapper = document.createElement('div');
+            layerWrapper.style.display = "flex";
+            layerWrapper.style.flexDirection = "column";
+            layerWrapper.style.gap = "32px";
+
+            if (officers.length) layerWrapper.appendChild(createSection("Program Officers (Teachers)", officers));
+            if (leaders.length) layerWrapper.appendChild(createSection("Leaders", leaders));
+            if (others.length) layerWrapper.appendChild(createSection("Volunteers", others));
+
+            grid.appendChild(layerWrapper);
+        }
+
+        if (!officers.length && !leaders.length && !others.length) {
+            grid.innerHTML = "<p>No volunteers found.</p>";
+        }
+
+    } catch (error) {
+        console.error(error);
+        grid.innerHTML = "<p>⚠️ Failed to load volunteers.</p>";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", loadVolunteers);
+window.addEventListener("resize", loadVolunteers);
+</script>
+
+</body>
+</html>

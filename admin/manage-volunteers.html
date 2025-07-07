@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Volunteers | NSS Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+
+<style>
+    .admin-content { padding: 20px; margin-left: 240px; }
+    .filter-bar { margin-bottom: 20px; display: flex; gap: 10px; }
+    .filter-bar input, .filter-bar select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+
+    .volunteers-list { display: flex; flex-direction: column; gap: 12px; }
+    .volunteer-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        border-radius: 6px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .volunteer-item img {
+        width: 45px; height: 45px; border-radius: 50%; margin-right: 15px;
+    }
+    .actions button {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        margin-left: 5px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .actions button:hover { background: #0056b3; }
+    @media(max-width: 768px){ .admin-content{ margin-left:0; } }
+
+    .add-volunteer-form {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.add-volunteer-form input {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+.add-volunteer-form button {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.add-volunteer-form button:hover {
+    background: #218838;
+}
+
+h2{
+                margin-top: 60px !important;
+            }
+</style>
+
+<body>
+
+<!-- ✅ Reusing your Nav Bar -->
+<nav class="sidebar">
+    <div class="sidebar-header">NSS Admin</div>
+    <div class="sidebar-links">
+        <a href="../admin.html"><i class="fa-solid fa-user-tie"></i> Dashboard</a>
+        <a href="manage-events.html"><i class="fa-solid fa-calendar"></i> Events</a>
+        <a href="manage-gallery.html"><i class="fa-solid fa-images"></i> Gallery</a>
+        <a href="manage-announcements.html"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
+        <a href="manage-volunteers.html" class="active"><i class="fa-solid fa-people-group"></i> Volunteers</a>
+        <a href="photo-to-url.html"><i class="fa-solid fa-link"></i> Image Converter</a>
+    </div>
+    <div class="sidebar-logout">
+        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+</nav>
+
+<div class="mobile-topbar">
+    <span class="topbar-title">NSS Admin</span>
+    <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+</div>
+
+<nav class="bottom-nav">
+    <a href="../admin.html"><i class="fa-solid fa-user-tie"></i></a>
+    <a href="manage-events.html"><i class="fa-solid fa-calendar"></i></a>
+    <a href="manage-gallery.html"><i class="fa-solid fa-images"></i></a>
+    <a href="manage-announcements.html"><i class="fa-solid fa-bullhorn"></i></a>
+    <a href="manage-volunteers.html" class="active"><i class="fa-solid fa-people-group"></i></a>
+    <a href="photo-to-url.html"><i class="fa-solid fa-link"></i></a>
+</nav>
+
+<!-- ✅ Volunteer Management Panel -->
+<main class="admin-content">
+    <h2>Manage Volunteers</h2>
+
+    <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by name...">
+        <select id="roleFilter">
+  <option value="">All Roles</option>
+  <option value="leader">Leader</option>
+  <option value="program officer">Program Officer</option>
+  <option value="volunteer">Volunteer</option>
+        </select>
+    </div>
+
+    <div class="add-volunteer-form">
+    <input type="text" id="addName" placeholder="Name">
+    <select id="addRole">
+  <option value="">Select Role</option>
+  <option value="leader">Leader</option>
+  <option value="program officer">Program Officer</option>
+  <option value="volunteer">Volunteer</option>
+    </select>
+    <input type="url" id="addPhotoUrl" placeholder="Photo URL">
+    <button onclick="addVolunteer()">Add Volunteer</button>
+    </div>
+
+
+    <div class="volunteers-list" id="volunteersList">
+        <!-- Volunteers will load here -->
+    </div>
+</main>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+        authDomain: "nss-campus.firebaseapp.com",
+        projectId: "nss-campus",
+        storageBucket: "nss-campus.appspot.com",
+        messagingSenderId: "314430987107",
+        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
+        measurementId: "G-2K15NLPK6T"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadVolunteers() {
+        const list = document.getElementById('volunteersList');
+        list.innerHTML = "Loading volunteers...";
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "volunteers"));
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const role = document.getElementById('roleFilter').value.toLowerCase();
+
+            list.innerHTML = '';
+
+            querySnapshot.forEach((docSnap) => {
+                const v = docSnap.data();
+                const nameMatch = v.name.toLowerCase().includes(search);
+                const roleMatch = !role || v.role.toLowerCase() === role;
+
+                if (nameMatch && roleMatch) {
+                    const div = document.createElement('div');
+                    div.className = 'volunteer-item';
+                    div.innerHTML = `
+                        <img src="${v.photoUrl}" alt="${v.name}">
+                        <div>
+                            <strong>${v.name}</strong> <br>
+                            <span>${v.role}</span>
+                        </div>
+                        <div class="actions">
+                            <button onclick="editVolunteer('${docSnap.id}')">Edit</button>
+                            <button onclick="deleteVolunteer('${docSnap.id}')">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                }
+            });
+
+            if (list.innerHTML === '') list.innerHTML = '<p>No volunteers found.</p>';
+
+        } catch (err) {
+            console.error(err);
+            list.innerHTML = '<p>⚠️ Failed to load volunteers.</p>';
+        }
+    }
+
+    window.editVolunteer = (id) => alert('Edit function not implemented yet. Volunteer ID: ' + id);
+
+    window.deleteVolunteer = async (id) => {
+        if (confirm('Are you sure you want to delete this volunteer?')) {
+            await deleteDoc(doc(db, 'volunteers', id));
+            loadVolunteers();
+        }
+    };
+
+    document.getElementById('searchInput').addEventListener('input', loadVolunteers);
+    document.getElementById('roleFilter').addEventListener('change', loadVolunteers);
+
+    document.addEventListener('DOMContentLoaded', loadVolunteers);
+
+    import { addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+window.addVolunteer = async () => {
+    const name = document.getElementById('addName').value.trim();
+    const role = document.getElementById('addRole').value.trim();
+    const photoUrl = document.getElementById('addPhotoUrl').value.trim();
+
+    if (!name || !role || !photoUrl) {
+        alert('Please fill in all fields.');
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, 'volunteers'), {
+            name: name,
+            role: role,
+            photoUrl: photoUrl
+        });
+        alert('Volunteer added successfully!');
+        document.getElementById('addName').value = '';
+        document.getElementById('addRole').value = '';
+        document.getElementById('addPhotoUrl').value = '';
+        loadVolunteers();
+    } catch (err) {
+        console.error(err);
+        alert('Failed to add volunteer.');
+    }
+};
+</script>
+
+<script>
+function logout() {
+    alert('Add your logout function.');
+}
+
+</script>
+
+</body>
+</html>

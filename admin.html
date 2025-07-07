@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | NSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">NSS Admin</div>
+        <div class="sidebar-links">
+        <a href="admin.html" class="active"><i class="fa-solid fa-user-tie"></i> Dashboard</a>
+        <a href="admin/manage-events.html"><i class="fa-solid fa-calendar"></i> Events</a>
+        <a href="admin/manage-gallery.html"><i class="fa-solid fa-images"></i> Gallery</a>
+        <a href="admin/manage-announcements.html"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
+        <a href="admin/manage-volunteers.html"><i class="fa-solid fa-people-group"></i> Volunteers</a>
+        <a href="admin/photo-to-url.html"><i class="fa-solid fa-link"></i> Image Converter</a>
+        </div>
+        <div class="sidebar-logout">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Topbar with Logout -->
+    <div class="mobile-topbar">
+        <span class="topbar-title">NSS Admin</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        
+        <a href="../admin.html" id="bottom-admin" title="Dashboard"><i class="fa-solid fa-user-tie"></i>
+        </a>
+        <a class="fa-solid fa-calendar" href="admin/manage-events.html" id="bottom-events">
+        </a>
+        <a class="fa-solid fa-images" href="admin/manage-gallery.html" id="bottom-gallery">
+        </a>
+        <a class="fa-solid fa-bullhorn" href="admin/manage-announcements.html" id="bottom-announcements">
+        </a>
+        <a href="admin/photo-to-url.html" id="bottom-converter" title="Image Converter"><i class="fa-solid fa-link"></i>
+        </a>
+    </nav>
+
+    <hr style="margin: 40px 0;">
+
+<div class="main-content">
+    <h2>Welcome to the Dashboard</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Events</h3>
+            <p id="eventCount">--</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Gallery Images</h3>
+            <p id="galleryCount">--</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Announcements</h3>
+            <p id="announcementCount">--</p>
+        </div>
+    </div>
+
+    <hr style="margin: 40px 0;">
+
+    <h2>Manage Activities</h2>
+    <div class="activity-form">
+        <label>Activity Title</label>
+        <input type="text" id="activityTitle">
+
+        <label>Date</label>
+        <input type="date" id="activityDate">
+
+        <label>Description</label>
+        <textarea id="activityDescription" rows="3"></textarea>
+
+        <label>Chief Guest</label>
+        <input type="text" id="activityChiefGuest">
+
+        <label>Time</label>
+        <input type="text" id="activityTime">
+
+        <label>Image URL</label>
+<input type="text" id="activityImgUrl">
+
+<label>Location</label>
+<input type="text" id="activityLocation">
+
+<label>Short Description</label>
+<input type="text" id="activityShortDesc">
+
+<label>Volunteers</label>
+<input type="text" id="activityVolunteers">
+
+
+        <button id="saveActivityBtn">Add Activity</button>
+
+        <div class="status" id="activityStatus"></div>
+    </div>
+
+    <h3 style="margin-top:40px;">Activity List</h3>
+    <div id="activityList" style="margin-top: 20px;"></div>
+</div>
+
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+        authDomain: "nss-campus.firebaseapp.com",
+        projectId: "nss-campus",
+        storageBucket: "nss-campus.appspot.com",
+        messagingSenderId: "314430987107",
+        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
+        measurementId: "G-2K15NLPK6T"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Protect the dashboard
+    onAuthStateChanged(auth, (user) => {
+        if (!user || user.email !== "campus.hss.2k24@gmail.com") {
+            window.location.href = "login.html";
+        } else {
+            loadCounts();
+        }
+    });
+
+    // Logout function
+    window.logout = function () {
+        signOut(auth).then(() => {
+            window.location.href = "login.html";
+        });
+    };
+
+    // Load dashboard counts
+    async function loadCounts() {
+        const eventSnapshot = await getDocs(collection(db, "events"));
+        const gallerySnapshot = await getDocs(collection(db, "gallery"));
+        const announcementsSnapshot = await getDocs(collection(db, "announcements"));
+
+        document.getElementById("eventCount").textContent = eventSnapshot.size;
+        document.getElementById("galleryCount").textContent = gallerySnapshot.size;
+        document.getElementById("announcementCount").textContent = announcementsSnapshot.size;
+    }
+
+    // Highlight active navigation
+    function highlightActiveNav() {
+        const path = window.location.pathname;
+        if (path.endsWith("admin.html") || path.endsWith("/admin/") || path.endsWith("/admin")) {
+            document.getElementById("nav-admin")?.classList.add("active");
+            document.getElementById("bottom-admin")?.classList.add("active");
+        } else if (path.includes("manage-events")) {
+            document.getElementById("nav-events")?.classList.add("active");
+            document.getElementById("bottom-events")?.classList.add("active");
+        } else if (path.includes("manage-gallery")) {
+            document.getElementById("nav-gallery")?.classList.add("active");
+            document.getElementById("bottom-gallery")?.classList.add("active");
+        } else if (path.includes("manage-announcements")) {
+            document.getElementById("nav-announcements")?.classList.add("active");
+            document.getElementById("bottom-announcements")?.classList.add("active");
+        } else if (path.includes("photo-to-url")) {
+            document.getElementById("nav-converter")?.classList.add("active");
+            document.getElementById("bottom-converter")?.classList.add("active");
+        }
+    }
+    highlightActiveNav();
+
+    // ================= ACTIVITY MANAGEMENT ===================
+
+    const saveActivityBtn = document.getElementById("saveActivityBtn");
+    const activityStatus = document.getElementById("activityStatus");
+    const activityList = document.getElementById("activityList");
+
+    let editingActivityId = null;
+
+    saveActivityBtn.addEventListener("click", async () => {
+        const title = document.getElementById("activityTitle").value.trim();
+        const date = document.getElementById("activityDate").value;
+        const description = document.getElementById("activityDescription").value.trim();
+        const chiefGuest = document.getElementById("activityChiefGuest").value.trim();
+        const time = document.getElementById("activityTime").value.trim();
+        const imgUrl = document.getElementById("activityImgUrl").value.trim();
+        const location = document.getElementById("activityLocation").value.trim();
+        const shortDesc = document.getElementById("activityShortDesc").value.trim();
+        const volunteers = document.getElementById("activityVolunteers").value.trim();
+
+        if (!title || !date || !description) {
+            activityStatus.textContent = "❌ Please fill all required fields.";
+            activityStatus.style.color = "red";
+            return;
+        }
+
+        const activityData = { title, date, description, chiefGuest, time, imgUrl, location, shortDesc, volunteers };
+
+        try {
+            if (editingActivityId) {
+                await updateDoc(doc(db, "activities", editingActivityId), activityData);
+                activityStatus.textContent = "✅ Activity updated!";
+            } else {
+                await addDoc(collection(db, "activities"), activityData);
+                activityStatus.textContent = "✅ Activity added!";
+            }
+            activityStatus.style.color = "green";
+            clearActivityForm();
+            loadActivities();
+        } catch (err) {
+            console.error(err);
+            activityStatus.textContent = "❌ Error saving activity.";
+            activityStatus.style.color = "red";
+        }
+    });
+
+    function clearActivityForm() {
+        document.getElementById("activityTitle").value = "";
+        document.getElementById("activityDate").value = "";
+        document.getElementById("activityDescription").value = "";
+        document.getElementById("activityChiefGuest").value = "";
+        document.getElementById("activityTime").value = "";
+        document.getElementById("activityImgUrl").value = "";
+        document.getElementById("activityLocation").value = "";
+        document.getElementById("activityShortDesc").value = "";
+        document.getElementById("activityVolunteers").value = "";
+        saveActivityBtn.textContent = "Add Activity";
+        editingActivityId = null;
+    }
+
+    async function loadActivities() {
+        activityList.innerHTML = "Loading...";
+        const querySnapshot = await getDocs(collection(db, "activities"));
+        activityList.innerHTML = "";
+
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const card = document.createElement("div");
+            card.className = "activity-card";
+            card.innerHTML = `
+                <img src="${data.imgUrl}" alt="${data.title}" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+                <h4>${data.title}</h4>
+                <small>${data.date}</small>
+                <p>${data.description}</p>
+                <p><strong>Location:</strong> ${data.location || 'N/A'}</p>
+                <p><strong>Short Description:</strong> ${data.shortDesc || 'N/A'}</p>
+                <p><strong>Chief Guest:</strong> ${data.chiefGuest || 'N/A'}</p>
+                <p><strong>Time:</strong> ${data.time || 'N/A'}</p>
+                <p><strong>Volunteers:</strong> ${data.volunteers || 'N/A'}</p>
+                <div class="actions">
+                    <button class="edit-btn" onclick="editActivity('${docSnap.id}', '${data.title}', '${data.date}', \`${data.description}\`, \`${data.chiefGuest || ''}\`, \`${data.time || ''}\`, \`${data.imgUrl || ''}\`, \`${data.location || ''}\`, \`${data.shortDesc || ''}\`, \`${data.volunteers || ''}\`)">Edit</button>
+                    <button class="delete-btn" onclick="deleteActivity('${docSnap.id}')">Delete</button>
+                </div>
+            `;
+            activityList.appendChild(card);
+        });
+
+        if (!activityList.innerHTML) activityList.innerHTML = "<p>No activities found.</p>";
+    }
+
+    // Delete Activity
+    window.deleteActivity = async (id) => {
+        if (!confirm("Delete this activity?")) return;
+        await deleteDoc(doc(db, "activities", id));
+        loadActivities();
+    };
+
+    // Edit Activity
+    window.editActivity = (id, title, date, description, chiefGuest, time, imgUrl, location, shortDesc, volunteers) => {
+        document.getElementById("activityTitle").value = title;
+        document.getElementById("activityDate").value = date;
+        document.getElementById("activityDescription").value = description;
+        document.getElementById("activityChiefGuest").value = chiefGuest;
+        document.getElementById("activityTime").value = time;
+        document.getElementById("activityImgUrl").value = imgUrl;
+        document.getElementById("activityLocation").value = location;
+        document.getElementById("activityShortDesc").value = shortDesc;
+        document.getElementById("activityVolunteers").value = volunteers;
+        saveActivityBtn.textContent = "Update Activity";
+        editingActivityId = id;
+    };
+
+    // Load activities on page load
+    loadActivities();
+</script>
+</body>
+</html>

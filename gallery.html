@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gallery | NSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+
+        .masonry {
+            column-count: 3;
+            column-gap: 20px;
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .masonry-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .masonry-item img {
+            width: 100%;
+            display: block;
+        }
+
+        .masonry-item-caption {
+            padding: 12px;
+        }
+
+        .masonry-item-title {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #007bff;
+        }
+
+        .masonry-item-description {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* NavBar Styles */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    margin-left: -25px;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.navbar-logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 15px;
+}
+
+.navbar-link {
+    font-size: 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
+    color: #007bff;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f4ff;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-weight: 500;
+    color: #007bff;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+    border: 1px solid #e0eaff;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: 1rem;
+    gap: 8px;
+}
+.back-btn:hover, .back-btn:focus {
+    background: #007bff;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(0,123,255,0.13);
+    transform: translateY(-2px) scale(1.03);
+    text-decoration: none;
+}
+.back-arrow {
+    font-size: 1.2em;
+    margin-right: 6px;
+    transition: margin-right 0.2s;
+}
+.back-btn:hover .back-arrow {
+    margin-right: 12px;
+}
+
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-links {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+    }
+}
+    </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="index.html" class="navbar-logo">NSS Campus</a>
+        <div class="navbar-links">
+            <a href="index.html" class="navbar-link back-btn" id="backBtn">
+                <span class="back-arrow">&#8592;</span> Back to Home
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+<h2>Gallery</h2>
+
+<div class="masonry" id="gallery">
+    <!-- Dynamic images load here -->
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+        authDomain: "nss-campus.firebaseapp.com",
+        projectId: "nss-campus",
+        storageBucket: "nss-campus.appspot.com",
+        messagingSenderId: "314430987107",
+        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
+        measurementId: "G-2K15NLPK6T"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadGallery() {
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "<p>Loading...</p>";
+
+        try {
+            const snapshot = await getDocs(collection(db, "gallery"));
+            gallery.innerHTML = "";
+
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                const html = `
+                    <div class="masonry-item">
+                        <img src="${item.imageUrl}" alt="">
+                    </div>
+                `;
+                gallery.innerHTML += html;
+            });
+
+            if (snapshot.empty) {
+                gallery.innerHTML = "<p>No images yet.</p>";
+            }
+        } catch (error) {
+            console.error(error);
+            gallery.innerHTML = "<p>⚠️ Failed to load gallery.</p>";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadGallery);
+</script>
+
+</body>
+</html>

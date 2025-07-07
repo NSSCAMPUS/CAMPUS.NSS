@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Gallery | NSS Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        
+        .main-content {
+            margin-left: 230px;
+            padding: 40px 24px 24px 24px;
+            min-height: 100vh;
+            transition: margin-left 0.2s;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #28a745;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto 40px auto;
+            background: #fff;
+            padding: 24px 24px 18px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        label {
+            display: block;
+            margin: 18px 0 6px 0;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 2px;
+            background: #f9f9fb;
+            transition: border 0.2s;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, input[type="date"]:focus {
+            border: 1.5px solid #28a745;
+            outline: none;
+        }
+        button {
+            margin-top: 22px;
+            padding: 12px 22px;
+            background-color: #28a745;
+            border: none;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(40,167,69,0.07);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .status {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        #imagePreview img {
+            margin-top: 12px;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+        /* Gallery styles */
+        .gallery-section-title {
+            text-align: center;
+            margin-bottom: 18px;
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            justify-content: center;
+            align-items: stretch;
+            margin-bottom: 40px;
+        }
+        .gallery-item {
+            background: #fff;
+            padding: 18px 14px 14px 14px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            max-width: 320px;
+            min-width: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: box-shadow 0.2s;
+        }
+        .gallery-item:hover {
+            box-shadow: 0 4px 18px rgba(40,167,69,0.10);
+        }
+        .gallery-item img {
+            width: 100%;
+            max-width: 260px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            background: #f7f7fa;
+        }
+        .gallery-item p {
+            font-weight: bold;
+            margin: 0 0 4px 0;
+            font-size: 1.08rem;
+            color: #222;
+        }
+        .gallery-item small {
+            display: block;
+            margin-bottom: 10px;
+            color: #777;
+            font-size: 0.97em;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .actions button {
+            margin: 0;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.93rem;
+            font-weight: 500;
+            transition: background 0.18s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: auto;
+        }
+        .actions .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .actions .delete-btn:hover {
+            background-color: #b52a37;
+        }
+        .actions .edit-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .actions .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive styles for phone */
+        @media (max-width: 900px) {
+            .main-content {
+                margin-left: 0;
+                padding: 18px 4vw 80px 4vw;
+            }
+            .container {
+                margin-top: 48px; /* Add space below the mobile topbar */
+                margin: 0 0 24px 0;
+                border-radius: 8px;
+                padding: 18px 10px 14px 10px;
+                max-width: 100%;
+            }
+            .gallery-grid {
+                gap: 14px;
+                grid-template-columns: 1fr 1fr;
+            }
+            .gallery-item {
+                padding: 12px 6px 10px 6px;
+                border-radius: 8px;
+                max-width: 100%;
+            }
+            h2 {
+                font-size: 1.3rem;
+                margin-bottom: 16px;
+            }
+        }
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: 10px 2vw 80px 2vw;
+            }
+            .container {
+                margin-top: 56px; /* Slightly more space for very small screens */
+                padding: 12px 4px 10px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Admin Navigation -->
+<nav class="sidebar">
+    <div class="sidebar-header">NSS Admin</div>
+    <div class="sidebar-links">
+        <a href="../admin.html"><i class="fa-solid fa-user-tie"></i> Dashboard</a>
+        <a href="manage-events.html"><i class="fa-solid fa-calendar"></i> Events</a>
+        <a href="manage-gallery.html" class="active"><i class="fa-solid fa-images"></i> Gallery</a>
+        <a href="manage-announcements.html"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
+        <a href="manage-volunteers.html"><i class="fa-solid fa-people-group"></i> Volunteers</a>
+        <a href="photo-to-url.html"><i class="fa-solid fa-link"></i> Image Converter</a>
+        </div>
+    <div class="sidebar-logout">
+        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+</nav>
+
+<div class="mobile-topbar">
+    <span class="topbar-title">NSS Admin</span>
+    <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+</div>
+
+<nav class="bottom-nav">
+    <a href="../admin.html" id="bottom-admin" title="Dashboard"><i class="fa-solid fa-user-tie"></i></a>
+    <a href="manage-events.html" id="bottom-events" title="Events"><i class="fa-solid fa-calendar"></i></a>
+    <a href="manage-gallery.html" id="bottom-gallery" title="Gallery"><i class="fa-solid fa-images"></i></a>
+    <a href="manage-announcements.html" id="bottom-announcements" title="Announcements"><i class="fa-solid fa-bullhorn"></i></a>
+    <a href="photo-to-url.html" id="bottom-converter" title="Image Converter"><i class="fa-solid fa-link"></i></a>
+</nav>
+
+<div class="main-content">
+    <div class="container">
+        <h2>Add Gallery Image</h2>
+        <label>Image Title</label>
+        <input type="text" id="title">
+        <label>Date</label>
+        <input type="date" id="date">
+        <label>Image URL</label>
+        <input type="text" id="imageUrl" placeholder="Paste image link">
+        <div id="imagePreview"></div>
+        <button id="addGalleryBtn">Add to Gallery</button>
+        <div class="status" id="status"></div>
+    </div>
+
+    <div class="gallery-section-title">Gallery</div>
+    <div class="gallery-grid" id="galleryGrid">Loading...</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSy AiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+        authDomain: "nss-campus.firebaseapp.com",
+        projectId: "nss-campus",
+        storageBucket: "nss-campus.appspot.com",
+        messagingSenderId: "314430987107",
+        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const addGalleryBtn = document.getElementById("addGalleryBtn");
+    const status = document.getElementById("status");
+    const imageUrlInput = document.getElementById("imageUrl");
+    const imagePreview = document.getElementById("imagePreview");
+    const galleryGrid = document.getElementById("galleryGrid");
+
+    // Live preview
+    imageUrlInput.addEventListener("input", () => {
+        const url = imageUrlInput.value.trim();
+        imagePreview.innerHTML = url ? `<img src="${url}" alt="Preview">` : '';
+    });
+
+    // Add Image
+    addGalleryBtn.addEventListener("click", async () => {
+        const title = document.getElementById("title").value.trim();
+        const date = document.getElementById("date").value;
+        const imageUrl = imageUrlInput.value.trim();
+
+        // Only imageUrl is required now
+        if (!imageUrl) {
+            status.textContent = "❌ Image URL is required.";
+            status.style.color = "red";
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, "gallery"), { title, date, imageUrl });
+            status.textContent = "✅ Added successfully!";
+            status.style.color = "green";
+            resetForm();
+            loadGallery();
+        } catch (err) {
+            console.error(err);
+            status.textContent = "❌ Error adding image.";
+            status.style.color = "red";
+        }
+    });
+
+    function resetForm() {
+        document.getElementById("title").value = "";
+        document.getElementById("date").value = "";
+        imageUrlInput.value = "";
+        imagePreview.innerHTML = "";
+    }
+
+    // Load All Images
+    async function loadGallery() {
+        galleryGrid.innerHTML = "Loading...";
+        const querySnapshot = await getDocs(collection(db, "gallery"));
+        galleryGrid.innerHTML = "";
+
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const galleryItem = document.createElement("div");
+            galleryItem.className = "gallery-item";
+            galleryItem.innerHTML = `
+                <img src="${data.imageUrl}" alt="Gallery">
+                <p>${data.title}</p>
+                <small>${data.date}</small>
+                <div class="actions">
+                    <button class="edit-btn" onclick="editImage('${docSnap.id}', '${data.title}', '${data.date}', '${data.imageUrl}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                    <button class="delete-btn" onclick="deleteImage('${docSnap.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+            `;
+            galleryGrid.appendChild(galleryItem);
+        });
+
+        if (galleryGrid.innerHTML === "") {
+            galleryGrid.innerHTML = "<p>No images found.</p>";
+        }
+    }
+
+    // Delete
+    window.deleteImage = async (id) => {
+        if (!confirm("Delete this image?")) return;
+        await deleteDoc(doc(db, "gallery", id));
+        loadGallery();
+    };
+
+    // Edit (fills the add form for editing)
+    window.editImage = (id, title, date, imageUrl) => {
+        document.getElementById("title").value = title;
+        document.getElementById("date").value = date;
+        imageUrlInput.value = imageUrl;
+        imagePreview.innerHTML = `<img src="${imageUrl}" alt="Preview">`;
+        status.textContent = "Editing mode: Update the details and click 'Update'.";
+        status.style.color = "#007bff";
+
+        addGalleryBtn.textContent = "Update Image";
+        addGalleryBtn.onclick = async () => {
+            const newTitle = document.getElementById("title").value.trim();
+            const newDate = document.getElementById("date").value;
+            const newImageUrl = imageUrlInput.value.trim();
+
+            try {
+                await updateDoc(doc(db, "gallery", id), {
+                    title: newTitle,
+                    date: newDate,
+                    imageUrl: newImageUrl
+                });
+                status.textContent = "✅ Updated successfully!";
+                status.style.color = "green";
+                addGalleryBtn.textContent = "Add to Gallery";
+                addGalleryBtn.onclick = addImage;
+                resetForm();
+                loadGallery();
+            } catch (err) {
+                console.error(err);
+                status.textContent = "❌ Failed to update.";
+                status.style.color = "red";
+            }
+        };
+    };
+
+    const addImage = async () => { addGalleryBtn.click(); };
+    loadGallery();
+
+    // Highlight active nav
+    function highlightActiveNav() {
+        const path = window.location.pathname;
+        if (path.endsWith("admin.html") || path.endsWith("/admin/") || path.endsWith("/admin")) {
+            document.getElementById("nav-admin")?.classList.add("active");
+            document.getElementById("bottom-admin")?.classList.add("active");
+        } else if (path.includes("manage-events")) {
+            document.getElementById("nav-events")?.classList.add("active");
+            document.getElementById("bottom-events")?.classList.add("active");
+        } else if (path.includes("manage-gallery")) {
+            document.getElementById("nav-gallery")?.classList.add("active");
+            document.getElementById("bottom-gallery")?.classList.add("active");
+        } else if (path.includes("manage-announcements")) {
+            document.getElementById("nav-announcements")?.classList.add("active");
+            document.getElementById("bottom-announcements")?.classList.add("active");
+        } else if (path.includes("photo-to-url")) {
+            document.getElementById("nav-converter")?.classList.add("active");
+            document.getElementById("bottom-converter")?.classList.add("active");
+        }
+    }
+    highlightActiveNav();
+</script>
+
+</body>
+</html>

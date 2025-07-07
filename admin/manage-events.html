@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Event | NSS Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            padding: 40px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #007bff;
+            border: none;
+            color: #000000;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .status {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #imagePreview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        #imagePreview img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .event-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-card img {
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .event-card h3 {
+            margin: 10px 0;
+            font-size: 1.2rem;
+            color: #007bff;
+        }
+
+        .event-card small {
+            display: block;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .event-card p {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .edit-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">NSS Admin</div>
+        <div class="sidebar-links">
+        <a href="../admin.html"><i class="fa-solid fa-user-tie"></i> Dashboard</a>
+        <a href="manage-events.html" class="active"><i class="fa-solid fa-calendar"></i> Events</a>
+        <a href="manage-gallery.html"><i class="fa-solid fa-images"></i> Gallery</a>
+        <a href="manage-announcements.html"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
+        <a href="manage-volunteers.html"><i class="fa-solid fa-people-group"></i> Volunteers</a>
+        <a href="photo-to-url.html"><i class="fa-solid fa-link"></i> Image Converter</a>
+        </div>
+        <div class="sidebar-logout">
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Topbar -->
+    <div class="mobile-topbar">
+        <span class="topbar-title">NSS Admin</span>
+        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+    
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        
+        <a href="../admin.html" id="bottom-admin" title="Dashboard"><i class="fa-solid fa-user-tie"></i></a>
+        <a href="manage-events.html" id="bottom-events" title="Events"><i class="fa-solid fa-calendar"></i></a>
+        <a href="manage-gallery.html" id="bottom-gallery" title="Gallery"><i class="fa-solid fa-images"></i></a>
+        <a href="manage-announcements.html" id="bottom-announcements" title="Announcements"><i class="fa-solid fa-bullhorn"></i></a>
+        <a href="photo-to-url.html" id="bottom-converter" title="Image Converter"><i class="fa-solid fa-link"></i></a>
+    </nav>
+    <div class="container">
+        <h2>Add New Event</h2>
+        <label>Event Title</label>
+        <input type="text" id="title">
+
+        <label>Event Date (YYYY-MM-DD)</label>
+        <input type="date" id="date">
+
+        <label>Description</label>
+        <textarea id="description" rows="4"></textarea>
+
+        <label>Image URL</label>
+        <input type="text" id="imageUrl" placeholder="Paste your image link here" required>
+        <div id="imagePreview" style="margin-top:15px;text-align:center;"></div>
+
+        <button id="addEventBtn">Add Event</button>
+
+        <div class="status" id="status"></div>
+
+        <h2 style="margin-top:40px; font-size:1.5rem; text-align:center;">Event List</h2>
+        <div id="eventList" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+            authDomain: "nss-campus.firebaseapp.com",
+            projectId: "nss-campus",
+            storageBucket: "nss-campus.appspot.com",
+            messagingSenderId: "314430987107",
+            appId: "1:314430987107:web:5ebbf3a6790f095b5bd156"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const addEventBtn = document.getElementById("addEventBtn");
+        const status = document.getElementById("status");
+        const imageUrlInput = document.getElementById("imageUrl");
+        const imagePreview = document.getElementById("imagePreview");
+        const eventList = document.getElementById("eventList");
+
+        let editingId = null;
+
+        // Preview Image
+        imageUrlInput.addEventListener("input", () => {
+            const url = imageUrlInput.value.trim();
+            imagePreview.innerHTML = url ? `<img src="${url}" style="max-width:100%; max-height:200px; border-radius:8px;">` : '';
+        });
+
+        // Add or Update Event
+        addEventBtn.addEventListener("click", async () => {
+            const title = document.getElementById("title").value.trim();
+            const date = document.getElementById("date").value;
+            const description = document.getElementById("description").value.trim();
+            const imageUrl = imageUrlInput.value.trim();
+
+            // Only imageUrl is required
+            if (!imageUrl) {
+                status.textContent = "❌ Image URL is required.";
+                status.style.color = "red";
+                return;
+            }
+
+            try {
+                if (editingId) {
+                    await updateDoc(doc(db, "events", editingId), { title, date, description, imageUrl });
+                    status.textContent = "✅ Event updated!";
+                } else {
+                    await addDoc(collection(db, "events"), { title, date, description, imageUrl });
+                    status.textContent = "✅ Event added!";
+                }
+                status.style.color = "green";
+                resetForm();
+                loadEvents();
+            } catch (err) {
+                console.error(err);
+                status.textContent = "❌ Error saving event.";
+                status.style.color = "red";
+            }
+        });
+
+        function resetForm() {
+            document.getElementById("title").value = "";
+            document.getElementById("date").value = "";
+            document.getElementById("description").value = "";
+            imageUrlInput.value = "";
+            imagePreview.innerHTML = "";
+            addEventBtn.textContent = "Add Event";
+            editingId = null;
+        }
+
+        // Load All Events
+        async function loadEvents() {
+            eventList.innerHTML = "Loading...";
+            const querySnapshot = await getDocs(collection(db, "events"));
+            eventList.innerHTML = "";
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const card = document.createElement("div");
+                card.className = "event-card";
+                card.innerHTML = `
+                    <img src="${data.imageUrl}" alt="Event">
+                    <h3>${data.title}</h3>
+                    <small>${data.date}</small>
+                    <p>${data.description}</p>
+                    <div class="actions">
+                        <button class="edit-btn" onclick="editEvent('${docSnap.id}', '${data.title}', '${data.date}', '${data.description}', '${data.imageUrl}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteEvent('${docSnap.id}')">Delete</button>
+                    </div>
+                `;
+                eventList.appendChild(card);
+            });
+
+            if (!eventList.innerHTML) eventList.innerHTML = "<p>No events found.</p>";
+        }
+
+        // Delete
+        window.deleteEvent = async (id) => {
+            if (!confirm("Delete this event?")) return;
+            await deleteDoc(doc(db, "events", id));
+            loadEvents();
+        };
+
+        // Edit
+        window.editEvent = (id, title, date, description, imageUrl) => {
+            document.getElementById("title").value = title;
+            document.getElementById("date").value = date;
+            document.getElementById("description").value = description;
+            imageUrlInput.value = imageUrl;
+            imagePreview.innerHTML = `<img src="${imageUrl}" style="max-width:100%; max-height:200px; border-radius:8px;">`;
+            addEventBtn.textContent = "Update Event";
+            editingId = id;
+        };
+
+        loadEvents();
+    </script>
+    <script>
+function highlightActiveNav() {
+    const path = window.location.pathname;
+    if (path.endsWith("admin.html") || path.endsWith("/admin/") || path.endsWith("/admin")) {
+        document.getElementById("nav-admin")?.classList.add("active");
+        document.getElementById("bottom-admin")?.classList.add("active");
+    } else if (path.includes("manage-events")) {
+        document.getElementById("nav-events")?.classList.add("active");
+        document.getElementById("bottom-events")?.classList.add("active");
+    } else if (path.includes("manage-gallery")) {
+        document.getElementById("nav-gallery")?.classList.add("active");
+        document.getElementById("bottom-gallery")?.classList.add("active");
+    } else if (path.includes("manage-announcements")) {
+        document.getElementById("nav-announcements")?.classList.add("active");
+        document.getElementById("bottom-announcements")?.classList.add("active");
+    } else if (path.includes("photo-to-url")) {
+        document.getElementById("nav-converter")?.classList.add("active");
+        document.getElementById("bottom-converter")?.classList.add("active");
+    }
+}
+highlightActiveNav();
+</script>
+</body>
+</html>

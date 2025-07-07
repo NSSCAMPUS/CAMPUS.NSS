@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Photo to URL Converter - ImgBB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Base page styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f7faff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Heading styles */
+        h2 {
+            font-size: 2.2rem;
+            color: #5c3dff;
+            margin-bottom: 10px;
+        }
+
+        /* Subtitle */
+        .subtitle {
+            color: #555;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Upload Box */
+        .upload-box {
+            background: #ffffff;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 40px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            transition: background 0.3s;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .upload-box:hover {
+            background: #f0f4ff;
+        }
+
+        /* Upload Icon */
+        .upload-icon {
+            font-size: 40px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        /* Upload Button */
+        button {
+            background: linear-gradient(90deg, #7f4fff, #b76fff);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #6741ff, #9f50ff);
+        }
+
+        /* Image card container */
+        #output {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* Image card */
+        .image-card {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+        }
+
+        /* Image preview */
+        .image-card img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* Image info */
+        .image-card p {
+            font-size: 0.85rem;
+            word-break: break-all;
+            text-align: center;
+        }
+
+        /* Copy button */
+        .copy-btn {
+            background: #6f47ff;
+            color: #fff;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #5533cc;
+        }
+
+        .custom-file-label {
+            display: inline-block;
+            background: #f0f4ff;
+            color: #5c3dff;
+            border: 2px solid #bdbfff;
+            border-radius: 30px;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            transition: background 0.3s, color 0.3s, border 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .custom-file-label:hover {
+            background: #e0e7ff;
+            color: #6741ff;
+            border-color: #7f4fff;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 1000;
+            /* Remove scroll wheel/scrollbar */
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            color: #5c3dff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .sidebar-links {
+            flex-grow: 1;
+        }
+
+        .sidebar-links a {
+            display: block;
+            padding: 10px;
+            margin: 10px 0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-links a:hover {
+            background: #f0f4ff;
+        }
+
+        .sidebar-links a.active,
+        .sidebar-links a.active i,
+        .sidebar-links a:hover,
+        .sidebar-links a:hover i {
+            color: #5c3dff !important;
+        }
+
+        .sidebar-logout {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn {
+            background: #ff4f47;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #e03e3e;
+        }
+
+        /* Mobile topbar */
+        .mobile-topbar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #5c3dff;
+            color: white;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .topbar-title {
+            font-size: 1.2rem;
+        }
+
+        /* Bottom navigation for mobile */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .bottom-nav a.active,
+        .bottom-nav a.active i,
+        .bottom-nav a:hover,
+        .bottom-nav a:hover i {
+            color: #5c3dff !important;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .mobile-topbar {
+                display: flex;
+            }
+
+            .bottom-nav {
+                display: flex;
+            }
+
+            /* Fix: Add top margin to main content so heading is not hidden behind topbar */
+            h2{
+                margin-top: 60px !important;
+            }
+        }        
+    </style>
+
+    <!-- FontAwesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">NSS Admin</div>
+        <div class="sidebar-links">
+        <a href="../admin.html"><i class="fa-solid fa-user-tie"></i> Dashboard</a>
+        <a href="manage-events.html"><i class="fa-solid fa-calendar"></i> Events</a>
+        <a href="manage-gallery.html"><i class="fa-solid fa-images"></i> Gallery</a>
+        <a href="manage-announcements.html"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
+        <a href="manage-volunteers.html"><i class="fa-solid fa-people-group"></i> Volunteers</a>
+        <a href="photo-to-url.html" class="active"><i class="fa-solid fa-link"></i> Image Converter</a>
+        </div>
+        <div class="sidebar-logout">
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Topbar -->
+    <div class="mobile-topbar">
+        <span class="topbar-title">NSS Admin</span>
+        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="../admin.html" id="bottom-admin" title="Dashboard"><i class="fa-solid fa-user-tie"></i></a>
+        <a href="manage-events.html" id="bottom-events" title="Events"><i class="fa-solid fa-calendar"></i></a>
+        <a href="manage-gallery.html" id="bottom-gallery" title="Gallery"><i class="fa-solid fa-images"></i></a>
+        <a href="manage-announcements.html" id="bottom-announcements" title="Announcements"><i class="fa-solid fa-bullhorn"></i></a>
+        <a href="photo-to-url.html" id="bottom-converter" title="Image Converter"><i class="fa-solid fa-link"></i></a>
+    </nav>
+
+    <h2>Photo to URL Converter</h2>
+    <p class="subtitle">Upload your images and get instant shareable URLs in JPEG format.</p>
+
+    <div class="upload-box">
+        <div class="upload-icon">📤</div>
+        <label for="imageInput" class="custom-file-label">
+            <span id="fileLabelText">Choose Image</span>
+            <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="updateFileLabel()">
+        </label>
+        <button onclick="uploadImage(); event.stopPropagation();">Upload</button>
+    </div>
+
+    <div id="output"></div>
+
+    <script>
+        function updateFileLabel() {
+            const input = document.getElementById('imageInput');
+            const label = document.getElementById('fileLabelText');
+            if (input.files && input.files[0]) {
+                label.textContent = input.files[0].name;
+            } else {
+                label.textContent = "Choose Image";
+            }
+        }
+
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file!');
+                return;
+            }
+
+            const apiKey = '674517d62a119c28e77acd958832333f'; // Replace with your ImgBB API Key
+            const reader = new FileReader();
+
+            reader.onloadend = async function () {
+                const base64String = reader.result.replace(/^data:.+;base64,/, '');
+
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        image: base64String
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const url = data.data.url;
+                    document.getElementById('output').innerHTML += `
+                        <div class="image-card">
+                            <img src="${url}" alt="Uploaded Image">
+                            <p>${url}</p>
+                            <button class="copy-btn" onclick="navigator.clipboard.writeText('${url}')">Copy URL</button>
+                        </div>
+                    `;
+                } else {
+                    alert('Upload failed!');
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Highlight active nav link for sidebar and bottom nav
+        function highlightActiveNav() {
+            const path = window.location.pathname;
+            if (path.includes("manage-events")) {
+                document.getElementById("nav-events")?.classList.add("active");
+                document.getElementById("bottom-events")?.classList.add("active");
+            } else if (path.includes("manage-gallery")) {
+                document.getElementById("nav-gallery")?.classList.add("active");
+                document.getElementById("bottom-gallery")?.classList.add("active");
+            } else if (path.includes("manage-announcements")) {
+                document.getElementById("nav-announcements")?.classList.add("active");
+                document.getElementById("bottom-announcements")?.classList.add("active");
+            } else if (path.includes("photo-to-url")) {
+                document.getElementById("nav-converter")?.classList.add("active");
+                document.getElementById("bottom-converter")?.classList.add("active");
+            }
+        }
+        highlightActiveNav();
+    </script>
+
+    <style>
+    /* Add this to your CSS for active icon color */
+    .sidebar-links a.active,
+    .sidebar-links a.active i,
+    .sidebar-links a:hover,
+    .sidebar-links a:hover i,
+    .bottom-nav a.active,
+    .bottom-nav a.active i,
+    .bottom-nav a:hover,
+    .bottom-nav a:hover i {
+        color: #5c3dff !important;
+    }
+    </style>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Our Activities | NSS Campus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/activities.css">
+</head>
+<body>
+
+<!-- 🌟 Header -->
+<header class="page-header">
+    <h1>Our Activities</h1>
+    <a href="../index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+</header>
+
+<!-- 🔥 Activities Grid -->
+<section class="activities-section">
+    <div class="activities-grid" id="activitiesGrid">Loading activities...</div>
+</section>
+
+<!-- 🔍 Modal -->
+<div id="activityModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h3 id="modalTitle"></h3>
+        <img id="modalImage" src="" alt="">
+        <p id="modalDesc"></p>
+        <ul id="modalMeta"></ul>
+    </div>
+</div>
+
+<!-- ✅ Firebase & Dynamic Scripts -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+  authDomain: "nss-campus.firebaseapp.com",
+  projectId: "nss-campus",
+  storageBucket: "nss-campus.appspot.com",
+  messagingSenderId: "314430987107",
+  appId: "1:314430987107:web:5ebbf3a6790f095b5bd156"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const grid = document.getElementById('activitiesGrid');
+const modal = document.getElementById('activityModal');
+const closeBtn = document.querySelector('.close-btn');
+const modalTitle = document.getElementById('modalTitle');
+const modalImage = document.getElementById('modalImage');
+const modalDesc = document.getElementById('modalDesc');
+const modalMeta = document.getElementById('modalMeta');
+
+async function loadActivities() {
+    const snapshot = await getDocs(collection(db, 'activities'));
+    const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    docs.sort((a, b) => b.date - a.date);
+    grid.innerHTML = '';
+
+    docs.forEach(act => {
+        const card = document.createElement('div');
+        card.className = 'activity-card';
+        card.onclick = () => showModal(act);
+        card.innerHTML = `
+            <img src="${act.imgUrl}" alt="${act.title}">
+            <div class="activity-card-content">
+                <div class="activity-title">${act.title}</div>
+                <div class="activity-short">${act.shortDesc}</div>
+            </div>`;
+        grid.appendChild(card);
+    });
+
+    if (docs.length === 0) grid.innerHTML = "<p>No activities found.</p>";
+}
+
+function showModal(act) {
+    modalTitle.textContent = act.title;
+    modalImage.src = act.imgUrl;
+    modalDesc.textContent = act.shortDesc;
+    modalMeta.innerHTML = `
+      <li><strong>Chief Guest:</strong> ${act.chiefGuest}</li>
+      <li><strong>Time:</strong> ${new Date(act.date).toLocaleString()}</li>
+      <li><strong>Location:</strong> ${act.location}</li>
+      <li><strong>Volunteers:</strong> ${act.volunteers}</li>`;
+    modal.style.display = 'block';
+}
+
+closeBtn.onclick = () => modal.style.display = 'none';
+window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; }
+
+document.addEventListener('DOMContentLoaded', loadActivities);
+</script>
+
+</body>
+</html>

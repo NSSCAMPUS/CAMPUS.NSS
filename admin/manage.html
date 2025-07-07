@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Activities | NSS Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f7f9fc; padding: 40px; color: #333; }
+        .container { max-width: 500px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        h2 { text-align: center; margin-bottom: 20px; color: #007bff; }
+        label { display: block; margin: 15px 0 5px; font-weight: 500; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        button { margin-top: 20px; padding: 12px 20px; background-color: #007bff; border: none; color: #fff; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .status { margin-top: 20px; text-align: center; }
+        .activity-card { background: #fff; border-radius: 8px; padding: 15px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+        .activity-card h3 { margin: 5px 0; color: #007bff; }
+        .activity-card small { display: block; color: #666; margin-bottom: 8px; }
+        .activity-card p { margin: 5px 0; }
+        .actions { display: flex; justify-content: space-between; margin-top: 10px; }
+        .edit-btn, .delete-btn { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+        .edit-btn { background-color: #ffc107; color: #000; }
+        .delete-btn { background-color: #dc3545; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Manage Activities</h2>
+
+    <label>Activity Title</label>
+    <input type="text" id="title">
+
+    <label>Date (YYYY-MM-DD)</label>
+    <input type="date" id="date">
+
+    <label>Description</label>
+    <textarea id="description" rows="3"></textarea>
+
+    <label>Chief Guest</label>
+    <input type="text" id="chiefGuest">
+
+    <label>Time</label>
+    <input type="text" id="time">
+
+    <button id="saveActivityBtn">Add Activity</button>
+
+    <div class="status" id="status"></div>
+
+    <h2 style="margin-top:40px; font-size:1.5rem; text-align:center;">Activities List</h2>
+    <div id="activityList"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+    authDomain: "nss-campus.firebaseapp.com",
+    projectId: "nss-campus",
+    storageBucket: "nss-campus.appspot.com",
+    messagingSenderId: "314430987107",
+    appId: "1:314430987107:web:5ebbf3a6790f095b5bd156"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const saveBtn = document.getElementById("saveActivityBtn");
+const status = document.getElementById("status");
+const activityList = document.getElementById("activityList");
+
+let editingId = null;
+
+// Save or Update Activity
+saveBtn.addEventListener("click", async () => {
+    const title = document.getElementById("title").value.trim();
+    const date = document.getElementById("date").value;
+    const description = document.getElementById("description").value.trim();
+    const chiefGuest = document.getElementById("chiefGuest").value.trim();
+    const time = document.getElementById("time").value.trim();
+
+    if (!title || !date || !description) {
+        status.textContent = "❌ Please fill in all required fields.";
+        status.style.color = "red";
+        return;
+    }
+
+    try {
+        if (editingId) {
+            await updateDoc(doc(db, "activities", editingId), { title, date, description, chiefGuest, time });
+            status.textContent = "✅ Activity updated!";
+        } else {
+            await addDoc(collection(db, "activities"), { title, date, description, chiefGuest, time });
+            status.textContent = "✅ Activity added!";
+        }
+        status.style.color = "green";
+        resetForm();
+        loadActivities();
+    } catch (err) {
+        console.error(err);
+        status.textContent = "❌ Error saving activity.";
+        status.style.color = "red";
+    }
+});
+
+function resetForm() {
+    document.getElementById("title").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("chiefGuest").value = "";
+    document.getElementById("time").value = "";
+    saveBtn.textContent = "Add Activity";
+    editingId = null;
+}
+
+// Load Activities
+async function loadActivities() {
+    activityList.innerHTML = "Loading...";
+    const querySnapshot = await getDocs(collection(db, "activities"));
+    activityList.innerHTML = "";
+
+    querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const card = document.createElement("div");
+        card.className = "activity-card";
+        card.innerHTML = `
+            <h3>${data.title}</h3>
+            <small>${data.date}</small>
+            <p>${data.description}</p>
+            <p><strong>Chief Guest:</strong> ${data.chiefGuest || 'N/A'}</p>
+            <p><strong>Time:</strong> ${data.time || 'N/A'}</p>
+            <div class="actions">
+                <button class="edit-btn" onclick="editActivity('${docSnap.id}', '${data.title}', '${data.date}', \`${data.description}\`, \`${data.chiefGuest || ''}\`, \`${data.time || ''}\`)">Edit</button>
+                <button class="delete-btn" onclick="deleteActivity('${docSnap.id}')">Delete</button>
+            </div>
+        `;
+        activityList.appendChild(card);
+    });
+
+    if (!activityList.innerHTML) activityList.innerHTML = "<p>No activities found.</p>";
+}
+
+// Delete
+window.deleteActivity = async (id) => {
+    if (!confirm("Delete this activity?")) return;
+    await deleteDoc(doc(db, "activities", id));
+    loadActivities();
+};
+
+// Edit
+window.editActivity = (id, title, date, description, chiefGuest, time) => {
+    document.getElementById("title").value = title;
+    document.getElementById("date").value = date;
+    document.getElementById("description").value = description;
+    document.getElementById("chiefGuest").value = chiefGuest;
+    document.getElementById("time").value = time;
+    saveBtn.textContent = "Update Activity";
+    editingId = id;
+};
+
+loadActivities();
+</script>
+</body>
+</html>

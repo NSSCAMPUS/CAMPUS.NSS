@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login | NSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #007bff;
+            text-align: center;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Admin Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div id="error-message" class="error-message"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+        authDomain: "nss-campus.firebaseapp.com",
+        projectId: "nss-campus",
+        storageBucket: "nss-campus.appspot.com",
+        messagingSenderId: "314430987107",
+        appId: "1:314430987107:web:5ebbf3a6790f095b5bd156",
+        measurementId: "G-2K15NLPK6T"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Allowed Admin Email
+    const allowedAdminEmail = "campus.hss.2k24@gmail.com";
+
+    // Login Function
+    window.login = function () {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const errorDiv = document.getElementById("error-message");
+
+        if (email !== allowedAdminEmail) {
+            errorDiv.textContent = "❌ Access denied. Only admin can login.";
+            return;
+        }
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                // ✅ Successful Login
+                window.location.href = "admin.html";
+            })
+            .catch((error) => {
+                console.error(error);
+                errorDiv.textContent = "❌ Incorrect email or password.";
+            });
+    };
+</script>
+
+</body>
+</html>
