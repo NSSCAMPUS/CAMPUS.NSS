@@ -1,185 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Manage Gallery | NSS Admin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/admin.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Manage Reels | NSS Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <nav class="sidebar">
-        <div class="sidebar-header">NSS Admin</div>
-        <div class="sidebar-links">
-        <a href="../admin.html"><i class="fa-solid fa-user-tie"></i> Dashboard</a>
-        <a href="manage-events.html"><i class="fa-solid fa-calendar"></i> Events</a>
-        <a href="manage-gallery.html"><i class="fa-solid fa-images"></i> Gallery</a>
-        <a href="manage-announcements.html" class="active"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
-        <a href="manage-volunteers.html"><i class="fa-solid fa-people-group"></i> Volunteers</a>
-        <a href="photo-to-url.html"><i class="fa-solid fa-link"></i> Image Converter</a>
-        </div>
-        <div class="sidebar-logout">
-            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-        </div>
-    </nav>
-
-    <!-- Mobile Topbar -->
-    <div class="mobile-topbar">
-        <span class="topbar-title">NSS Admin</span>
-        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar">
+    <div class="sidebar-header">NSS Admin</div>
+    <div class="sidebar-links">
+      <a href="../admin.html"><i class="fa-solid fa-user-tie"></i> Dashboard</a>
+      <a href="manage-events.html"><i class="fa-solid fa-calendar"></i> Events</a>
+      <a href="manage-gallery.html"><i class="fa-solid fa-images"></i> Gallery</a>
+      <a href="manage-announcements.html" class="active"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
+      <a href="manage-volunteers.html"><i class="fa-solid fa-people-group"></i> Volunteers</a>
+      <a href="photo-to-url.html"><i class="fa-solid fa-link"></i> Image Converter</a>
     </div>
-    
-    <!-- Bottom Navigation for Mobile -->
-    <nav class="bottom-nav">
-        <a href="../admin.html" id="bottom-admin" title="Dashboard"><i class="fa-solid fa-user-tie"></i></a>
-        <a href="manage-events.html" id="bottom-events" title="Events"><i class="fa-solid fa-calendar"></i></a>
-        <a href="manage-gallery.html" id="bottom-gallery" title="Gallery"><i class="fa-solid fa-images"></i></a>
-        <a href="manage-announcements.html" id="bottom-announcements" title="Announcements"><i class="fa-solid fa-bullhorn"></i></a>
-        <a href="photo-to-url.html" id="bottom-converter" title="Image Converter"><i class="fa-solid fa-link"></i></a>
-    </nav>
+    <div class="sidebar-logout">
+      <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </nav>
 
-    <div class="main-content">
+  <!-- Mobile Topbar -->
+  <div class="mobile-topbar">
+    <span class="topbar-title">NSS Admin</span>
+    <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+  </div>
+  
+  <!-- Bottom Navigation for Mobile -->
+  <nav class="bottom-nav">
+    <a href="../admin.html" id="bottom-admin" title="Dashboard"><i class="fa-solid fa-user-tie"></i></a>
+    <a href="manage-events.html" id="bottom-events" title="Events"><i class="fa-solid fa-calendar"></i></a>
+    <a href="manage-gallery.html" id="bottom-gallery" title="Gallery"><i class="fa-solid fa-images"></i></a>
+    <a href="manage-announcements.html" id="bottom-announcements" title="Announcements"><i class="fa-solid fa-bullhorn"></i></a>
+    <a href="photo-to-url.html" id="bottom-converter" title="Image Converter"><i class="fa-solid fa-link"></i></a>
+  </nav>
+
+  <div class="main-content">
     <h2>Manage Reels</h2>
 
-    <!-- Reel Upload/Edit Form -->
     <div class="reel-form">
-        <h3>Add / Edit Reel</h3>
-        <label>Reel Title</label>
-        <input type="text" id="reelTitle" placeholder="Reel title">
+      <h3>Add / Edit Reel</h3>
+      <label>Reel Title</label>
+      <input type="text" id="reelTitle" placeholder="Reel title">
 
-        <label>Video URL</label>
-        <input type="text" id="reelUrl" placeholder="Paste video URL here">
+      <label>Video Embed URL (YouTube)</label>
+      <input type="text" id="reelUrl" placeholder="Paste embed link here" oninput="showPreview()">
 
-        <button id="saveReelBtn">Save Reel</button>
+      <div id="reelPreview" style="margin:10px 0;"></div>
 
-        <div class="status" id="reelStatus"></div>
+      <button id="saveReelBtn" class="reels-btn"><i class="fa-solid fa-floppy-disk"></i> Save Reel</button>
+      <div class="status" id="reelStatus"></div>
     </div>
 
     <h3 style="margin-top:40px;">Reel List</h3>
-    <div id="reelList" style="margin-top: 20px;"></div>
-</div>
+    <div id="reelList"></div>
+  </div>
 
-    <script>
-    function highlightActiveNav() {
-        const path = window.location.pathname;
-        if (path.endsWith("admin.html") || path.endsWith("/admin/") || path.endsWith("/admin")) {
-            document.getElementById("nav-admin")?.classList.add("active");
-            document.getElementById("bottom-admin")?.classList.add("active");
-        } else if (path.includes("manage-events")) {
-            document.getElementById("nav-events")?.classList.add("active");
-            document.getElementById("bottom-events")?.classList.add("active");
-        } else if (path.includes("manage-gallery")) {
-            document.getElementById("nav-gallery")?.classList.add("active");
-            document.getElementById("bottom-gallery")?.classList.add("active");
-        } else if (path.includes("manage-announcements")) {
-            document.getElementById("nav-announcements")?.classList.add("active");
-            document.getElementById("bottom-announcements")?.classList.add("active");
-        } else if (path.includes("photo-to-url")) {
-            document.getElementById("nav-converter")?.classList.add("active");
-            document.getElementById("bottom-converter")?.classList.add("active");
-        }
+  <script>
+    // Preview the embed video
+    function showPreview() {
+      const url = document.getElementById("reelUrl").value.trim();
+      const preview = document.getElementById("reelPreview");
+      if (url && url.startsWith("https://www.youtube.com/embed/")) {
+        preview.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen style="width:100%;height:220px;"></iframe>`;
+      } else {
+        preview.innerHTML = "";
       }
-    highlightActiveNav();
-    </script>
-
-    <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
-    authDomain: "nss-campus.firebaseapp.com",
-    projectId: "nss-campus",
-    storageBucket: "nss-campus.appspot.com",
-    messagingSenderId: "314430987107",
-    appId: "1:314430987107:web:5ebbf3a6790f095b5bd156"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const saveReelBtn = document.getElementById("saveReelBtn");
-const reelStatus = document.getElementById("reelStatus");
-const reelList = document.getElementById("reelList");
-
-let editingReelId = null;
-
-saveReelBtn.addEventListener("click", async () => {
-    const title = document.getElementById("reelTitle").value.trim();
-    const url = document.getElementById("reelUrl").value.trim();
-
-    if (!title || !url) {
-        reelStatus.textContent = "❌ Please fill all fields.";
-        reelStatus.style.color = "red";
-        return;
     }
+  </script>
 
-    try {
-        if (editingReelId) {
-            await updateDoc(doc(db, "reels", editingReelId), { title, url });
-            reelStatus.textContent = "✅ Reel updated!";
-        } else {
-            await addDoc(collection(db, "reels"), { title, url });
-            reelStatus.textContent = "✅ Reel added!";
-        }
-        reelStatus.style.color = "green";
-        clearReelForm();
-        loadReels();
-    } catch (err) {
-        console.error(err);
-        reelStatus.textContent = "❌ Error saving reel.";
-        reelStatus.style.color = "red";
-    }
-});
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-function clearReelForm() {
-    document.getElementById("reelTitle").value = "";
-    document.getElementById("reelUrl").value = "";
-    saveReelBtn.textContent = "Save Reel";
-    editingReelId = null;
-}
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiHF51JbTQ41YMxpIb5Caus6TWtgA4Kg0",
+      authDomain: "nss-campus.firebaseapp.com",
+      projectId: "nss-campus",
+      storageBucket: "nss-campus.appspot.com",
+      messagingSenderId: "314430987107",
+      appId: "1:314430987107:web:5ebbf3a6790f095b5bd156"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-async function loadReels() {
-    reelList.innerHTML = "Loading...";
-    const querySnapshot = await getDocs(collection(db, "reels"));
-    reelList.innerHTML = "";
+    const saveBtn = document.getElementById("saveReelBtn");
+    const status = document.getElementById("reelStatus");
+    const reelList = document.getElementById("reelList");
 
-    querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const card = document.createElement("div");
-        card.className = "reel-card";
-        card.innerHTML = `
-            <h4>${data.title}</h4>
-            <p><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></p>
-            <div class="actions">
-                <button onclick="editReel('${docSnap.id}', \`${data.title}\`, \`${data.url}\`)">Edit</button>
-                <button onclick="deleteReel('${docSnap.id}')">Delete</button>
-            </div>
+    let editingId = null;
+
+    async function loadReels() {
+      reelList.innerHTML = "Loading...";
+      const querySnapshot = await getDocs(collection(db, "reels"));
+      reelList.innerHTML = "";
+
+      querySnapshot.forEach((docSnap) => {
+        const { title, url } = docSnap.data();
+        const item = document.createElement("div");
+        item.className = "reel-card";
+        item.innerHTML = `
+          <h4>${title}</h4>
+          <iframe src="${url}" frameborder="0" allowfullscreen style="width:100%; height:250px; margin-top:10px;"></iframe>
+          <div class="actions" style="margin-top:10px;">
+            <button onclick="editReel('${docSnap.id}', \`${title}\`, \`${url}\`)">Edit</button>
+            <button onclick="deleteReel('${docSnap.id}')">Delete</button>
+          </div>
         `;
-        reelList.appendChild(card);
+        reelList.appendChild(item);
+      });
+
+      if (!reelList.hasChildNodes()) reelList.innerHTML = "<p>No reels found.</p>";
+    }
+
+    saveBtn.addEventListener("click", async () => {
+      const title = document.getElementById("reelTitle").value.trim();
+      const url = document.getElementById("reelUrl").value.trim();
+
+      if (!title || !url) {
+        status.textContent = "❌ Fill all fields.";
+        status.style.color = "red";
+        return;
+      }
+
+      try {
+        if (editingId) {
+          await updateDoc(doc(db, "reels", editingId), { title, url });
+          status.textContent = "✅ Reel updated!";
+        } else {
+          await addDoc(collection(db, "reels"), { title, url });
+          status.textContent = "✅ Reel added!";
+        }
+        status.style.color = "green";
+        clearForm();
+        loadReels();
+      } catch (err) {
+        console.error(err);
+        status.textContent = "❌ Error saving reel.";
+        status.style.color = "red";
+      }
     });
 
-    if (!reelList.innerHTML) reelList.innerHTML = "<p>No reels found.</p>";
-}
+    function clearForm() {
+      document.getElementById("reelTitle").value = "";
+      document.getElementById("reelUrl").value = "";
+      document.getElementById("reelPreview").innerHTML = "";
+      saveBtn.textContent = "Save Reel";
+      editingId = null;
+    }
 
-// Delete Reel
-window.deleteReel = async (id) => {
-    if (!confirm("Delete this reel?")) return;
-    await deleteDoc(doc(db, "reels", id));
+    // Window functions for edit/delete
+    window.editReel = (id, title, url) => {
+      document.getElementById("reelTitle").value = title;
+      document.getElementById("reelUrl").value = url;
+      showPreview();
+      saveBtn.textContent = "Update Reel";
+      editingId = id;
+    };
+
+    window.deleteReel = async (id) => {
+      if (!confirm("Delete this reel?")) return;
+      await deleteDoc(doc(db, "reels", id));
+      loadReels();
+    };
+
+    // Load reels on page ready
     loadReels();
-};
-
-// Edit Reel
-window.editReel = (id, title, url) => {
-    document.getElementById("reelTitle").value = title;
-    document.getElementById("reelUrl").value = url;
-    saveReelBtn.textContent = "Update Reel";
-    editingReelId = id;
-};
-
-// Load reels on page load
-loadReels();
-</script>
+  </script>
 </body>
 </html>
+
