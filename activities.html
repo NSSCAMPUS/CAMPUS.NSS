@@ -35,6 +35,65 @@ body { font-family: Arial, sans-serif; background: #f7f9fc; margin:0; padding:0;
 @media(max-width: 600px) {
     .activity-card img { height: 140px; }
 }
+
+        .page-header {
+    padding: 32px 16px 24px 16px;
+    text-align: center;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-bottom: 1px solid #e5eaf1;
+    position: relative;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 2.1rem;
+    color: #1a237e;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    color: #1976d2;
+    background: #f2f7fd;
+    border-radius: 6px;
+    padding: 8px 18px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 1px 4px rgba(25, 118, 210, 0.07);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.back-btn i {
+    font-size: 1.1em;
+}
+
+.back-btn:hover, .back-btn:focus {
+    background: #1976d2;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.13);
+    outline: none;
+}
+
+@media (max-width: 600px) {
+    .page-header {
+        padding: 20px 6px 16px 6px;
+    }
+    .page-header h1 {
+        font-size: 1.3rem;
+    }
+    .back-btn {
+        font-size: 0.97rem;
+        padding: 7px 12px;
+        margin-top: 12px;
+    }
+}
 </style>
 </head>
 <body>
@@ -42,7 +101,7 @@ body { font-family: Arial, sans-serif; background: #f7f9fc; margin:0; padding:0;
 <!-- 🌟 Header -->
 <header class="page-header">
     <h1>Our Activities</h1>
-    <a href="../index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
 </header>
 
 <!-- 🔥 Activities Grid -->
