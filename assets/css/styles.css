@@ -1034,3 +1034,72 @@ footer a:hover {
     text-decoration: none;
     opacity: 0.93;
 }
+
+.built-by {
+    margin-top: 10px;
+    font-style: italic;
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+}
+
+.built-by a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.built-by a:hover,
+.built-by a:focus {
+    color: #1976d2;
+    text-decoration: underline;
+}
+
+.nexa-contact-popup {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    width: 260px;
+    background: #fff;
+    color: #222;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    z-index: 9999;
+    font-family: Arial, sans-serif;
+    border: 1px solid #e0e0e0;
+    animation: fadeInNexa 0.3s;
+}
+@keyframes fadeInNexa {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+.nexa-contact-header {
+    background: #1976d2;
+    color: #fff;
+    padding: 10px 16px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+}
+.nexa-close {
+    cursor: pointer;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+.nexa-contact-body {
+    padding: 14px 16px 16px 16px;
+    font-size: 0.97rem;
+}
+.nexa-contact-body a {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+}
+.nexa-contact-body a:hover {
+    text-decoration: underline;
+}
