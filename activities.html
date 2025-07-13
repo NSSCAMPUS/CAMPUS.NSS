@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="assets/images/nss-logo-bg-rem.png" type="image/png">
+    <link rel="icon" href="assets/images/nss-logo-bg-rem-shd.png" type="image/png">
     <meta charset="UTF-8">
     <title>Our Activities | NSS Campus</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,52 +110,178 @@
         }
 
         /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 99;
-        }
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
 
-        .modal-content {
-            background: #fff;
-            max-width: 500px;
-            margin: 80px auto;
-            padding: 30px;
-            border-radius: 8px;
-            position: relative;
-        }
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 30px 20px;
+  border-radius: 8px;
+  position: relative;
+  box-sizing: border-box;
+  scrollbar-width: thin; /* Firefox */
+}
 
-        .modal-content img {
-            width: 100%;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
+/* Show scrollbar (Chrome, Edge, Safari) */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
 
-        .close-btn {
-            position: absolute;
-            top: 14px;
-            right: 18px;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
+/* Close Button */
+.close-btn {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  z-index: 2;
+}
 
-        .modal-content h3 {
-            margin-bottom: 10px;
-        }
+/* Responsive */
+@media (max-width: 600px) {
+  .modal-content {
+    width: 95vw;
+    max-width: 95vw;
+    margin: 0 auto;
+    padding: 16px 12px;
+  }
+  .modal-content img {
+    max-width: 100%;
+    height: auto;
+  }
+}
 
-        .modal-content ul {
-            list-style: none;
-            padding: 0;
-            font-size: 0.9rem;
-        }
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+  font-size: 0.9rem;
+}
+.modal-content li {
+  margin-bottom: 6px;
+  color: #444;
+}
 
-        .modal-content li {
-            margin-bottom: 6px;
-            color: #444;
-        }
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 99;
+  padding: 60px 20px;
+  left: 0; top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background: white;
+  margin: auto;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 8px;
+  position: relative;
+}
+.modal-content img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+.close-btn {
+  position: absolute;
+  top: -2px;
+  right: 18px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+  font-size: 0.9rem;
+}
+.modal-content li {
+  margin-bottom: 6px;
+  color: #444;
+}
+
+/* Responsive modal fix for mobile */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #fff;
+  margin: auto;
+  border-radius: 10px;
+  padding: 24px 18px;
+  max-width: 95vw;
+  width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Center modal content a bit more to the left on mobile */
+@media (max-width: 600px) {
+  .modal-content {
+    width: 97vw;
+    max-width: 97vw;
+    margin-left: -3.5vw; /* Shift slightly to the left */
+    margin-right: auto;
+    padding: 16px 6px;
+  }
+  .modal img {
+    max-width: 90vw;
+    height: auto;
+  }
+}
+
 
         @media(max-width: 600px) {
             .activity-card img { height: 140px; }
@@ -181,7 +307,7 @@
     </section>
 
     <!-- 🔍 Modal for Activity Details -->
-    <div id="activityModal" class="modal">
+    <div class="modal" id="activityModal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h3 id="modalTitle"></h3>
@@ -249,10 +375,11 @@
             modalImage.src = act.imgUrl;
             modalDesc.textContent = act.shortDesc;
             modalMeta.innerHTML = `
-                <li><strong>Chief Guest:</strong> ${act.chiefGuest}</li>
-                <li><strong>Time:</strong> ${new Date(act.date).toLocaleString()}</li>
-                <li><strong>Location:</strong> ${act.location}</li>
-                <li><strong>Volunteers:</strong> ${act.volunteers}</li>
+                <li><strong>Chief Guest:</strong> ${act.chiefGuest || ''}</li>
+                <li><strong>Date:</strong> ${act.date ? new Date(act.date).toLocaleDateString() : ''}</li>
+                <li><strong>Time:</strong> ${act.time || ''}</li>
+                <li><strong>Location:</strong> ${act.location || ''}</li>
+                <li><strong>Volunteers:</strong> ${act.volunteers || ''}</li>
             `;
             modal.style.display = 'block';
         }
