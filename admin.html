@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="assets/images/nss-logo-bg-rem.png" type="image/png">
     <meta charset="UTF-8">
     <title>Admin Dashboard | NSS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -111,7 +110,7 @@
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     // Firebase config
     const firebaseConfig = {
@@ -256,7 +255,7 @@
                 <p><strong>Time:</strong> ${data.time || 'N/A'}</p>
                 <p><strong>Volunteers:</strong> ${data.volunteers || 'N/A'}</p>
                 <div class="actions">
-                    <button class="edit-btn" onclick="editActivity('${docSnap.id}', '${data.title}', '${data.date}', \`${data.description}\`, \`${data.chiefGuest || ''}\`, \`${data.time || ''}\`, \`${data.imgUrl || ''}\`, \`${data.location || ''}\`, \`${data.shortDesc || ''}\`, \`${data.volunteers || ''}\`)">Edit</button>
+                    <button class="edit-btn" onclick="editActivity('${docSnap.id}')">Edit</button>
                     <button class="delete-btn" onclick="deleteActivity('${docSnap.id}')">Delete</button>
                 </div>
             `;
@@ -274,16 +273,23 @@
     };
 
     // Edit Activity
-    window.editActivity = (id, title, date, description, chiefGuest, time, imgUrl, location, shortDesc, volunteers) => {
-        document.getElementById("activityTitle").value = title;
-        document.getElementById("activityDate").value = date;
-        document.getElementById("activityDescription").value = description;
-        document.getElementById("activityChiefGuest").value = chiefGuest;
-        document.getElementById("activityTime").value = time;
-        document.getElementById("activityImgUrl").value = imgUrl;
-        document.getElementById("activityLocation").value = location;
-        document.getElementById("activityShortDesc").value = shortDesc;
-        document.getElementById("activityVolunteers").value = volunteers;
+    window.editActivity = async (id) => {
+        const docRef = doc(db, "activities", id);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            alert("Activity not found!");
+            return;
+        }
+        const data = docSnap.data();
+        document.getElementById("activityTitle").value = data.title || "";
+        document.getElementById("activityDate").value = data.date || "";
+        document.getElementById("activityDescription").value = data.description || "";
+        document.getElementById("activityChiefGuest").value = data.chiefGuest || "";
+        document.getElementById("activityTime").value = data.time || "";
+        document.getElementById("activityImgUrl").value = data.imgUrl || "";
+        document.getElementById("activityLocation").value = data.location || "";
+        document.getElementById("activityShortDesc").value = data.shortDesc || "";
+        document.getElementById("activityVolunteers").value = data.volunteers || "";
         saveActivityBtn.textContent = "Update Activity";
         editingActivityId = id;
     };
