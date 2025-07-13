@@ -12,7 +12,7 @@
   <!-- Navbar -->
 <nav class="navbar">
     <div class="logo">
-    <img src="assets/images/nss-logo.png" alt="NSS Logo">
+    <img src="assets/images/nss-logo-bg-rem.png" alt="NSS Logo">
     <span>NSS Unit 500</span>
 </div>
     <ul class="nav-links" id="navLinks">
@@ -172,8 +172,6 @@
     </div>
 </div>
 
-
-
 <script src="assets/js/app.js"></script>
 <script type="module">
     import { loadGalleryPreview } from './script.js';
@@ -318,22 +316,24 @@ async function loadActivities(limit = 2) {
 }
 
 function showModal(act) {
-  modalTitle.textContent = act.title;
-  modalImage.src = act.imgUrl;
-  modalDesc.textContent = act.shortDesc;
-  modalMeta.innerHTML = `
-    <li><strong>Chief Guest:</strong> ${act.chiefGuest}</li>
-    <li><strong>Time:</strong> ${new Date(act.date).toLocaleString()}</li>
-    <li><strong>Location:</strong> ${act.location}</li>
-    <li><strong>Volunteers:</strong> ${act.volunteers}</li>`;
-  modal.style.display = 'block';
+    modalTitle.textContent = act.title;
+    modalImage.src = act.imgUrl;
+    modalDesc.textContent = act.shortDesc;
+    modalMeta.innerHTML = `
+        <li><strong>Chief Guest:</strong> ${act.chiefGuest || ''}</li>
+        <li><strong>Date:</strong> ${act.date ? new Date(act.date).toLocaleDateString() : ''}</li>
+        <li><strong>Time:</strong> ${act.time || ''}</li>
+        <li><strong>Location:</strong> ${act.location || ''}</li>
+        <li><strong>Volunteers:</strong> ${act.volunteers || ''}</li>
+    `;
+    modal.style.display = 'block';
 }
 
 closeBtn.onclick = () => modal.style.display = 'none';
 window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; }
 
 document.addEventListener('DOMContentLoaded', () => loadActivities());
-    </script>
+</script>
 <script>
 document.querySelector('.built-by a').addEventListener('click', function(e) {
     e.preventDefault();
